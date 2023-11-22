@@ -32,6 +32,23 @@ class UserManager(BaseUserManager):
 
         return user
 
+    def create_superuser(self, email: str, password: str):
+        """
+        The create_superuser function is a helper function that creates a superuser with the given email and password.
+        It also sets the is_staff and is_superuser flags to True.
+
+        :param self: Refer to the class itself
+        :param email: str: Define the email address of the superuser
+        :param password: str: Set the password for the user
+        :return: A user object
+        :doc-author: Trelent
+        """
+        user = self.create_user(email, password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        return user
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)

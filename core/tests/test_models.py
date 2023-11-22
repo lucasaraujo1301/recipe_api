@@ -62,6 +62,40 @@ class ModelTests(TestCase):
 
     def test_new_user_with_email_raises_error(self):
         """
+        The test_new_user_with_email_raises_error function tests that the create_user function raises an error if we
+        try to pass in a non-string email address.
+        We use the assertRaises method of unittest.TestCase to test for this behavior.
+
+        :param self: Access the instance of the class
+        :return: An exception
+        :doc-author: Trelent
+        """
+        with self.assertRaises(TypeError) as cm:
+            get_user_model().objects.create_user(123, 'sample123')
+
+        exception = cm.exception
+        self.assertEqual(str(exception), 'Email must be an string.')
+
+    def test_create_superuser(self):
+        """
+        The test_create_superuser function is a test case that checks if the create_superuser function
+        in our custom user model works as expected. We first call the create_superuser function with some
+        test data and then assert that it returns a user object, which has is_staff and is_superuser set to True.
+
+        :param self: Represent the instance of the class
+        :return: A user object
+        :doc-author: Trelent
+        """
+        user = get_user_model().objects.create_superuser(
+            'test@example.com',
+            'test123'
+        )
+
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_staff)
+
+    def test_new_superuser_without_email_raises_error(self):
+        """
         The test_new_user_without_email_raises_error function tests that a new user without an email address raises an error.
 
         :param self: Represent the instance of the class
@@ -69,8 +103,25 @@ class ModelTests(TestCase):
         :doc-author: Trelent
         """
 
+        with self.assertRaises(ValueError) as cm:
+            get_user_model().objects.create_superuser('', 'sample123')
+
+        exception = cm.exception
+        self.assertEqual(str(exception), 'Email must be provided.')
+
+    def test_new_superuser_with_email_raises_error(self):
+
+        """
+        The test_new_user_with_email_raises_error function tests that the create_user function raises an error if we
+        try to pass in a non-string email address.
+        We use the assertRaises method of unittest.TestCase to test for this behavior.
+
+        :param self: Access the instance of the class
+        :return: An exception
+        :doc-author: Trelent
+        """
         with self.assertRaises(TypeError) as cm:
-            get_user_model().objects.create_user(123, 'sample123')
+            get_user_model().objects.create_superuser(123, 'sample123')
 
         exception = cm.exception
         self.assertEqual(str(exception), 'Email must be an string.')
