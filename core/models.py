@@ -22,9 +22,9 @@ class UserManager(BaseUserManager):
         :doc-author: Trelent
         """
         if not email:
-            raise ValueError('Email must be provided.')
+            raise ValueError("Email must be provided.")
         if not isinstance(email, str):
-            raise TypeError('Email must be an string.')
+            raise TypeError("Email must be an string.")
 
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
@@ -54,4 +54,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"

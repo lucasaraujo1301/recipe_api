@@ -11,12 +11,9 @@ class ModelTests(TestCase):
         :return: A user object
         :doc-author: Trelent
         """
-        email = 'test@example.com'
-        password = 'testpass123'
-        user = get_user_model().objects.create_user(
-            email=email,
-            password=password
-        )
+        email = "test@example.com"
+        password = "testpass123"
+        user = get_user_model().objects.create_user(email=email, password=password)
 
         self.assertEqual(email, user.email)
         self.assertTrue(user.check_password(password))
@@ -35,14 +32,14 @@ class ModelTests(TestCase):
         :doc-author: Trelent
         """
         sample_emails = [
-            ['test1@EXAMPLE.com', 'test1@example.com'],
-            ['Test2@Example.com', 'Test2@example.com'],
-            ['TEST3@EXAMPLE.COM', 'TEST3@example.com'],
-            ['test4@example.COM', 'test4@example.com'],
+            ["test1@EXAMPLE.com", "test1@example.com"],
+            ["Test2@Example.com", "Test2@example.com"],
+            ["TEST3@EXAMPLE.COM", "TEST3@example.com"],
+            ["test4@example.COM", "test4@example.com"],
         ]
 
         for email, expected in sample_emails:
-            user = get_user_model().objects.create_user(email, 'sample123')
+            user = get_user_model().objects.create_user(email, "sample123")
             self.assertEqual(expected, user.email)
 
     def test_new_user_without_email_raises_error(self):
@@ -56,10 +53,10 @@ class ModelTests(TestCase):
         """
 
         with self.assertRaises(ValueError) as cm:
-            get_user_model().objects.create_user('', 'sample123')
+            get_user_model().objects.create_user("", "sample123")
 
         exception = cm.exception
-        self.assertEqual(str(exception), 'Email must be provided.')
+        self.assertEqual(str(exception), "Email must be provided.")
 
     def test_new_user_with_email_raises_error(self):
         """
@@ -72,10 +69,10 @@ class ModelTests(TestCase):
         :doc-author: Trelent
         """
         with self.assertRaises(TypeError) as cm:
-            get_user_model().objects.create_user(123, 'sample123')
+            get_user_model().objects.create_user(123, "sample123")
 
         exception = cm.exception
-        self.assertEqual(str(exception), 'Email must be an string.')
+        self.assertEqual(str(exception), "Email must be an string.")
 
     def test_create_superuser(self):
         """
@@ -87,10 +84,7 @@ class ModelTests(TestCase):
         :return: A user object
         :doc-author: Trelent
         """
-        user = get_user_model().objects.create_superuser(
-            'test@example.com',
-            'test123'
-        )
+        user = get_user_model().objects.create_superuser("test@example.com", "test123")
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
