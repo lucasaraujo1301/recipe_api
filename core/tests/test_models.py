@@ -44,3 +44,33 @@ class ModelTests(TestCase):
         for email, expected in sample_emails:
             user = get_user_model().objects.create_user(email, 'sample123')
             self.assertEqual(expected, user.email)
+
+    def test_new_user_without_email_raises_error(self):
+        """
+        The test_new_user_without_email_raises_error function tests that a new user without an email address raises an error.
+
+        :param self: Represent the instance of the class
+        :return: An error if the email is not provided
+        :doc-author: Trelent
+        """
+
+        with self.assertRaises(ValueError) as cm:
+            get_user_model().objects.create_user('', 'sample123')
+
+        exception = cm.exception
+        self.assertEqual(str(exception), 'Email must be provided.')
+
+    def test_new_user_with_email_raises_error(self):
+        """
+        The test_new_user_without_email_raises_error function tests that a new user without an email address raises an error.
+
+        :param self: Represent the instance of the class
+        :return: An error if the email is not provided
+        :doc-author: Trelent
+        """
+
+        with self.assertRaises(TypeError) as cm:
+            get_user_model().objects.create_user(123, 'sample123')
+
+        exception = cm.exception
+        self.assertEqual(str(exception), 'Email must be an string.')

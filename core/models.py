@@ -7,7 +7,7 @@ from django.contrib.auth.models import (
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email: str, password: str = None, **extra_fields):
         """
         The create_user function creates a new user with the given email and password.
         The function normalizes the email address by lowercase, then hashes the password using Django’s built-in
@@ -21,6 +21,11 @@ class UserManager(BaseUserManager):
         :return: A user object
         :doc-author: Trelent
         """
+        if not email:
+            raise ValueError('Email must be provided.')
+        if not isinstance(email, str):
+            raise TypeError('Email must be an string.')
+
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
