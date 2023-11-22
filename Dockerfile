@@ -1,4 +1,4 @@
-FROM python:3.10-alpine3.17
+FROM python:3.10.13-alpine
 LABEL maintainer="Lucas Medeiros"
 
 ENV PYTHONUNBUFFERED 1
