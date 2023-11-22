@@ -10,17 +10,18 @@ class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         """
         The create_user function creates a new user with the given email and password.
-        The function also sets the is_staff attribute to False, which means that this user will not be able to log in to
-        Django’s admin site.
+        The function normalizes the email address by lowercase, then hashes the password using Django’s built-in
+        set_password() method.
+        Finally, we save() our newly created user to our database.
 
         :param self: Refer to the class itself
-        :param email: Create a user with an email
-        :param password: Set the password of the user
-        :param **extra_fields: Pass in any additional fields that you want to add to the user model
+        :param email: Create a new user with the email address provided
+        :param password: Set the password for the user
+        :param **extra_fields: Pass in any additional fields that may be required by the user model
         :return: A user object
         :doc-author: Trelent
         """
-        user = self.model(email=email, **extra_fields)
+        user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
