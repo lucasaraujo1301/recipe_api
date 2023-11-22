@@ -43,11 +43,7 @@ class UserManager(BaseUserManager):
         :return: A user object
         :doc-author: Trelent
         """
-        user = self.create_user(email, password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
-        return user
+        return self.create_user(email, password, is_staff=True, is_superuser=True)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
