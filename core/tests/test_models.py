@@ -47,7 +47,8 @@ class ModelTests(TestCase):
 
     def test_new_user_without_email_raises_error(self):
         """
-        The test_new_user_without_email_raises_error function tests that a new user without an email address raises an error.
+        The test_new_user_without_email_raises_error function tests that a new user without an email address raises
+        an error.
 
         :param self: Represent the instance of the class
         :return: An error if the email is not provided
