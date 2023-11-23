@@ -57,3 +57,27 @@ class AdminSiteTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, self.user.email)
         self.assertContains(res, self.user.name)
+
+    def test_create_user_page(self):
+        """
+        The test_create_user_page function tests that the create user page works.
+        It does this by:
+            1. Getting the URL of the create user page (reverse)
+            2. Making a GET request to it (client)
+            3. Asserting that we use 200 as our response status code (status_code)
+            4. Asserting that we have all input necessary to create an User
+
+        :param self: Access the attributes and methods of the class in python
+        :return: The status code, 200
+        :doc-author: Trelent
+        """
+        url = reverse("admin:core_user_add")
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'name="email"')
+        self.assertContains(res, 'name="password1"')
+        self.assertContains(res, 'name="password2"')
+        self.assertContains(res, 'name="is_superuser"')
+        self.assertContains(res, 'name="is_active"')
+        self.assertContains(res, 'name="is_staff"')
+        self.assertContains(res, 'name="name"')
