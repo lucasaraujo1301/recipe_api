@@ -37,3 +37,23 @@ class AdminSiteTests(TestCase):
 
         self.assertContains(res, self.user.name)
         self.assertContains(res, self.user.email)
+
+    def test_edit_user_page(self):
+        """
+        The test_edit_user_page function tests that the edit user page works.
+        It does this by:
+        - Getting the URL for editing a user (note that we are using the helper function reverse to build the URL since
+            it will contain the URL to edit a user)
+        - Making a GET request to that URL
+        - Asserting that response gives back an HTTP 200 status code and contains both email and name of our test user
+
+        :param self: Represent the instance of the class
+        :return: A status code of 200 and the user's email and name
+        :doc-author: Trelent
+        """
+        url = reverse("admin:core_user_change", args=[self.user.id])
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, self.user.email)
+        self.assertContains(res, self.user.name)
