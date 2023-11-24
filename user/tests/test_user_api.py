@@ -133,3 +133,35 @@ class PublicUserApiTests(TestCase):
         self.assertIn("refresh", res.data)
         self.assertEqual(user_details["email"], res.data["user_email"])
         self.assertEqual(user_details["name"], res.data["user_name"])
+
+    def test_get_user_jwt_token_with_wrong_credentials(self):
+        user_details = {
+            "name": "Test Name",
+            "email": "test@example.com",
+            "password": "test123",
+        }
+        create_user(**user_details)
+
+        payload = {
+            "email": user_details["email"],
+            "password": "wrongpass",
+        }
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_user_jwt_token_with_empty_password(self):
+        user_details = {
+            "name": "Test Name",
+            "email": "test@example.com",
+            "password": "test123",
+        }
+        create_user(**user_details)
+
+        payload = {
+            "email": user_details["email"],
+            "password": "",
+        }
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
