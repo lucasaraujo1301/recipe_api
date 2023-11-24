@@ -6,6 +6,7 @@ from rest_framework import status
 
 
 CREATE_USER_URL = reverse("user:create")
+TOKEN_URL = reverse("user:token")
 
 
 def create_user(**params):
@@ -22,6 +23,15 @@ def create_user(**params):
 
 class PublicUserApiTests(TestCase):
     def setUp(self):
+        """
+        The setUp function is a special function that gets run before each test.
+        It's used to set up any state specific to the execution of the given test case.
+        In this case, we're using it to create an APIClient instance, which will be used for making API requests.
+
+        :param self: Represent the instance of the class
+        :return: The client
+        :doc-author: Trelent
+        """
         self.client = APIClient()
 
     def test_create_user_success(self):
@@ -94,3 +104,32 @@ class PublicUserApiTests(TestCase):
 
         user_exists = get_user_model().objects.filter(email=payload["email"]).exists()
         self.assertFalse(user_exists)
+
+    def test_get_user_jwt_token(self):
+        """
+        The test_get_user_jwt_token function tests the following:
+            1. It creates a user with valid credentials (name, email, password)
+            2. It then sends a POST request to the token endpoint with those same credentials as payload data
+            3. The response should contain an access and refresh token for that user
+
+        :param self: Access the instance of the class
+        :return: The access and refresh tokens, the user's email, name and id
+        :doc-author: Trelent
+        """
+        user_details = {
+            "name": "Test Name",
+            "email": "test@example.com",
+            "password": "test123",
+        }
+        create_user(**user_details)
+
+        payload = {
+            "email": user_details["email"],
+            "password": user_details["password"],
+        }
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertIn("access", res.data)
+        self.assertIn("refresh", res.data)
+        self.assertEqual(user_details["email"], res.data["user_email"])
+        self.assertEqual(user_details["name"], res.data["user_name"])

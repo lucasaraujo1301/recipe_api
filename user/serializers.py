@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, AuthUser
+from rest_framework_simplejwt.tokens import Token
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,3 +24,45 @@ class UserSerializer(serializers.ModelSerializer):
         :doc-author: Trelent
         """
         return get_user_model().objects.create_user(**validated_data)
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user: AuthUser) -> Token:
+        """
+        The get_token function is used to create a JWT token for the user.
+        The default implementation of this function uses the TokenObtainPairSerializer class to generate a token.
+        This method can be overridden if you need more control over how tokens are generated.
+
+        :param cls: Pass the class that is calling this function
+        :param user: AuthUser: Pass the user object to the get_token function
+        :return: A token that has the user's email and name
+        :doc-author: Trelent
+        """
+        token = super().get_token(user)
+
+        token["user_email"] = user.email
+        token["user_name"] = user.name
+
+        return token
+
+    def validate(self, attrs):
+        """
+        The validate function is called when the serializer is being validated.
+        It receives a dictionary of field values that have been validated and deserialized,
+        and it can raise a ValidationError if any validation fails. The validate function
+        is also passed the instance of the object being updated or created (if available).
+
+        :param self: Refer to the current instance of a class
+        :param attrs: Pass the validated data to the serializer
+        :return: A dictionary of validated data
+        :doc-author: Trelent
+        """
+        data = super().validate(attrs)
+
+        # Add custom user information to the response data
+        user = self.user
+        data["user_name"] = user.name
+        data["user_email"] = user.email
+
+        return data
