@@ -7,6 +7,7 @@ from rest_framework import status
 
 CREATE_USER_URL = reverse("user:create")
 TOKEN_URL = reverse("user:token")
+ME_URL = reverse("user:me")
 
 
 def create_user(**params):
@@ -185,3 +186,88 @@ class PublicUserApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("This field may not be blank.", res.data["password"])
+
+    def test_retrieve_user_unauthorized(self):
+        """
+        The test_retrieve_user_unauthorized function tests that authentication is required for users.
+        The test:
+        - Makes a GET request to the ME_URL endpoint (which requires authentication)
+        - Asserts that the response status code is 401 unauthorized
+
+        :param self: Represent the instance of the class
+        :return: A 401 unauthorized status code
+        :doc-author: Trelent
+        """
+        res = self.client.get(ME_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(
+            "Authentication credentials were not provided.", res.data["detail"]
+        )
+
+
+class PrivateUserApiTests(TestCase):
+    def setUp(self):
+        """
+        The setUp function is run before each test.
+        It creates a new user and authenticates the client with that user.
+
+        :param self: Represent the instance of the object that is being created
+        :return: The user and the client
+        :doc-author: Trelent
+        """
+        self.user = create_user(
+            email="test@example.com", password="testpass123", name="Test Name"
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_success(self):
+        """
+        The test_retrieve_profile_success function tests that the profile is retrieved successfully.
+        It does this by making a GET request to the ME_URL, which should return a 200 OK response with
+        the user's name and email address in the body of the response.
+
+        :param self: Represent the instance of the class
+        :return: A 200 status code and a dictionary containing the name and email of the user
+        :doc-author: Trelent
+        """
+        res = self.client.get(ME_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {"name": self.user.name, "email": self.user.email})
+
+    def test_post_me_not_allowed(self):
+        """
+        The test_post_me_not_allowed function tests that the POST method is not allowed on the me/ URL.
+        The test_post_me_not_allowed function makes a POST request to the me/ URL and checks that it returns
+         a 405 status code.
+
+        :param self: Represent the instance of the class
+        :return: A 405 status code
+        :doc-author: Trelent
+        """
+        res = self.client.post(ME_URL, {})
+
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_user_profile(self):
+        """
+        The test_update_user_profile function tests that the PATCH request to the /users/me endpoint
+        updates a user's profile. The test first creates a payload dictionary with new values for name and password,
+        then sends a PATCH request to the /users/me endpoint using this payload. It then refreshes our user object from
+        the database and checks that its email, name, and password have been updated accordingly.
+
+        :param self: Access the class attributes and methods
+        :return: The user’s updated email, name, and password
+        :doc-author: Trelent
+        """
+        payload = {"name": "Updated Name", "password": "newpassword123"}
+
+        res = self.client.patch(ME_URL, payload)
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.name, payload["name"])
+        self.assertTrue(self.user.check_password(payload["password"]))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)

@@ -25,6 +25,29 @@ class UserSerializer(serializers.ModelSerializer):
         """
         return get_user_model().objects.create_user(**validated_data)
 
+    def update(self, instance, validated_data):
+        """
+        The update function is used to update an existing user.
+        It takes in the instance of the user that we want to update, and a dictionary containing all of the fields that
+         we want to change.
+        The validated_data argument contains all of our data after it has been validated by our serializer's
+         validation functions.
+
+        :param self: Represent the instance of the object
+        :param instance: Pass in the existing user object that is being updated
+        :param validated_data: Update the user object
+        :return: The user object
+        :doc-author: Trelent
+        """
+        password = validated_data.pop("password", None)
+        user = super().update(instance, validated_data)
+
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user
+
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
