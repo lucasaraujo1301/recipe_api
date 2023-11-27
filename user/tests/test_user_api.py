@@ -135,6 +135,14 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(user_details["name"], res.data["user_name"])
 
     def test_get_user_jwt_token_with_wrong_credentials(self):
+        """
+        The test_get_user_jwt_token_with_wrong_credentials function tests that a user cannot obtain a JWT token if they
+         provide the wrong credentials.
+
+        :param self: Represent the instance of the class
+        :return: The http status code 401
+        :doc-author: Trelent
+        """
         user_details = {
             "name": "Test Name",
             "email": "test@example.com",
@@ -149,8 +157,19 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(
+            "No active account found with the given credentials", res.data["detail"]
+        )
 
     def test_get_user_jwt_token_with_empty_password(self):
+        """
+        The test_get_user_jwt_token_with_empty_password function tests that the user cannot get a JWT token if they
+         provide an empty password.
+
+        :param self: Represent the instance of the class
+        :return: A 400 status code
+        :doc-author: Trelent
+        """
         user_details = {
             "name": "Test Name",
             "email": "test@example.com",
@@ -165,3 +184,4 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("This field may not be blank.", res.data["password"])
